@@ -1,8 +1,20 @@
 import React from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { checkIsAuth, logOut } from '../redux/slices/auth';
 
 const Navbar = () => {
-  const isAuth = false;
+  const dispatch = useDispatch()
+  const isAuth = useSelector(checkIsAuth);
+  const navigate = useNavigate()
+
+  const logoutHandler = () => {
+    dispatch(logOut())
+    localStorage.removeItem('token')
+    toast('Выход успешно выполнен')
+    navigate('/login')
+  }
 
   const activeStyles = {
     color: 'white',
@@ -44,7 +56,7 @@ const Navbar = () => {
       )}
 
       <div className="flex justify-center items-center bg-gray-600 text-xs text-white rounded-sm px-4 py-2">
-        {isAuth ? <button>Войти</button> : <Link to='/login'>Войти</Link>}
+        {isAuth ? <button onClick={logoutHandler}>Выйти</button> : <Link to='/login'>Войти</Link>}
       </div>
     </div>
   );

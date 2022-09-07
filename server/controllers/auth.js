@@ -9,7 +9,7 @@ export const register = async (req, res) => {
 
     const isUsed = await UserModel.findOne({ username });
 
-    if (isUsed) res.status(402).json({ message: 'Ошибка при регистрации' });
+    if (isUsed) res.status(404).json({ message: 'user занят' });
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -19,9 +19,17 @@ export const register = async (req, res) => {
       password: hashedPassword,
     });
 
+    const token = jwt.sign(
+      {
+        id: newUser._id,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '30d' },
+    );
+
     const user = await newUser.save();
 
-    res.json({ user, message: 'Регистрация прошла успешна' });
+    res.json({ user, token, message: 'Регистрация прошла успешна' });
   } catch (error) {
     console.log(error);
     res.status(404).json({ message: 'Произошла ошибка при регистрации' });
