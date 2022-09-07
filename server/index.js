@@ -2,8 +2,10 @@ import express from 'express';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import cors from 'cors';
+import upload from 'express-fileupload'
 
 import authRouter from './routes/auth.js'
+import postRouter from './routes/posts.js'
 
 const app = express();
 dotenv.config();
@@ -16,10 +18,13 @@ const DB_NAME = process.env.DB_NAME;
 
 //Middleware
 app.use(express.json());
+app.use(express.static('uploads'))
+app.use(upload());
 app.use(cors());
 
 //Routes
 app.use('/api/auth', authRouter)
+app.use('/api/posts', postRouter)
 
 
 
