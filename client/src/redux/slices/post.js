@@ -12,6 +12,15 @@ export const fetchCreate = createAsyncThunk('post/fetchCreate', async (params) =
     }
 })
 
+export const fetchPosts = createAsyncThunk('post/fetchPosts', async () => {
+    try {
+        const {data} = await axios.get('/posts')
+        return data
+    } catch (error) {
+        console.log(error)
+    }
+})
+
 export const PostSlice = createSlice({
     name: 'post',
     initialState: {
@@ -24,6 +33,7 @@ export const PostSlice = createSlice({
 
     },
     extraReducers: {
+        //Create post
         [fetchCreate.pending]: (state) => {
             state.loading = true
         },
@@ -33,6 +43,19 @@ export const PostSlice = createSlice({
             state.status = action.payload.message
         },
         [fetchCreate.rejected]: (state) => {
+            state.loading = false
+        },
+        //Get All Posts
+        [fetchPosts.pending]: (state) => {
+            state.loading = true
+        },
+        [fetchPosts.fulfilled]: (state, action) => {
+            state.loading = false
+            state.posts = action.payload.posts
+            state.popularPosts = action.payload.popularPosts
+            state.status = action.payload.message
+        },
+        [fetchPosts.rejected]: (state) => {
             state.loading = false
         },
     }

@@ -12,16 +12,18 @@ import Login from './Pages/Login';
 import Register from './Pages/Register';
 import EditPost from './Pages/EditPost';
 
-import './App.css';
 import { useDispatch } from 'react-redux';
 import { getMe } from './redux/slices/auth';
+
+import './App.css';
 
 function App() {
   const dispatch = useDispatch()
 
   useEffect(() => {
     dispatch(getMe())
-  }, [])
+  }, [dispatch])
+  
   return (
     <Layout>
       <Routes>
