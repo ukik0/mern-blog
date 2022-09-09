@@ -1,24 +1,36 @@
 import React, { useState } from 'react';
 import Moment from 'react-moment';
-import { Link, useParams } from 'react-router-dom';
-import { AiFillEye, AiOutlineMessage } from 'react-icons/ai';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { AiFillDelete, AiFillEye, AiOutlineMessage, AiTwotoneEdit } from 'react-icons/ai';
 
 import axios from '../utils/axios';
 import { useEffect } from 'react';
 import { useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchDeletePost } from '../redux/slices/post';
+import { toast } from 'react-toastify';
 
 const Post = () => {
-  const [post, setPost] = useState()
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const user = useSelector((state) => state.auth.user);
+  const [post, setPost] = useState();
   const { id } = useParams();
 
   const fetchPost = useCallback(async () => {
     try {
       const { data } = await axios.get(`/posts/${id}`);
-      setPost(data)
+      setPost(data);
     } catch (error) {
       console.log(error);
     }
-  },[id])
+  }, [id]);
+
+  const deletePostHandler = () => {
+    dispatch(fetchDeletePost(id));
+    toast('Удаление прошло успешно');
+    navigate('/');
+  };
 
   useEffect(() => {
     fetchPost();
@@ -28,10 +40,11 @@ const Post = () => {
     return <div className="text-xl text-center text-white py-10">Постов нет</div>;
   }
 
-  
   return (
     <div>
-      <Link to='/' className="flex justify-center items-center bg-gray-600 text-xs to-white rounded-sm py-2 px-4 w-1/6">
+      <Link
+        to="/"
+        className="flex justify-center items-center bg-gray-600 text-xs to-white rounded-sm py-2 px-4 w-1/6">
         Назад
       </Link>
 
@@ -59,15 +72,32 @@ const Post = () => {
               <div className="text-white text-xl">{post.title}</div>
               <p className="text-white opacity-60 text-xs pt-4">{post.text}</p>
 
-              <div className="flex gap-3 mt-2 items-center">
-                <button className="flex items-center justify-center gap-2 text-xs text-white opacity-50">
-                  <AiFillEye />
-                  <span>{post.views}</span>
-                </button>
-                <button className="flex items-center justify-center gap-2 text-xs text-white opacity-50">
-                  <AiOutlineMessage />
-                  <span>{post.comments?.length || 0}</span>
-                </button>
+              <div className="flex gap-3 mt-2 items-center justify-between">
+                <div className="flex gap-3 mt-4">
+                  <button className="flex items-center justify-center gap-2 text-xs text-white opacity-50">
+                    <AiFillEye />
+                    <span>{post.views}</span>
+                  </button>
+                  <button className="flex items-center justify-center gap-2 text-xs text-white opacity-50">
+                    <AiOutlineMessage />
+                    <span>{post.comments?.length || 0}</span>
+                  </button>
+                </div>
+
+                {user?._id === post.author && (
+                  <div className="flex gap-3 mt-4">
+                    <button className="flex items-center justify-center gap-2  text-white opacity-50">
+                      <Link to={`/post/${id}/edit`}>
+                        <AiTwotoneEdit />
+                      </Link>
+                    </button>
+                    <button
+                      onClick={deletePostHandler}
+                      className="flex items-center justify-center gap-2  text-white opacity-50">
+                      <AiFillDelete />
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>

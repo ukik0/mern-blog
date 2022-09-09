@@ -87,3 +87,42 @@ export const getMyPosts = async (req, res) => {
     console.log(error);
   }
 };
+
+export const deletePost = async (req, res) => {
+  try {
+    const post = await PostModel.findByIdAndDelete(req.params.id)
+
+    if (!post) res.json({message: 'Удалить не удалось'}) 
+    await user.findByIdAndUpdate(req.userId, {
+        $pull: {posts: req.params.id}
+    })
+    res.json({post, message: 'Пост удален'})
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const updatePost = async (req, res) => {
+  try {
+    const {title, text, id} = req.body
+
+    const post = await PostModel.findById(id)
+
+    if (req.files) {
+      const fileName = req.files.image.name + Date.now().toString();
+      const __dirname = dirname(fileURLToPath(import.meta.url));
+      req.files.image.mv(path.join(__dirname, '..', 'uploads', fileName));
+      post.imageUrl = fileName || ''
+    }
+
+    post.title = title
+    post.text = text
+
+    await post.save()
+
+    res.json(post)
+
+  } catch (error) {
+    console.log(error);
+  }
+};

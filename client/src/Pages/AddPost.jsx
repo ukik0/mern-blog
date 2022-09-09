@@ -9,7 +9,6 @@ const AddPost = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const status = useSelector((state) => state.posts.status);
-  console.log(status);
   const [title, setTitle] = useState('');
   const [text, setText] = useState('');
   const [image, setImage] = useState('');
@@ -21,9 +20,7 @@ const AddPost = () => {
       data.append('text', text);
       data.append('image', image);
       dispatch(fetchCreate(data));
-      setText('');
-      setTitle('');
-      setImage('');
+      navigate('/')
     } catch (error) {
       console.log(error);
     }

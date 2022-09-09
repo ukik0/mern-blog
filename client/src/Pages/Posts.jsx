@@ -7,7 +7,6 @@ import axios from '../utils/axios'
 
 const Posts = () => {
   const [posts, setPosts] = useState([])
-  console.log(posts)
 
   const fetchMyPosts = async () => {
     try {

@@ -21,6 +21,24 @@ export const fetchPosts = createAsyncThunk('post/fetchPosts', async () => {
     }
 })
 
+export const fetchDeletePost = createAsyncThunk('/post/fetchDeletePost', async (id) => {
+    try {
+        const {data} = axios.delete(`/posts/${id}`, id)
+        return data
+    } catch (error) {
+        console.log(error)
+    }
+})
+
+export const fetchUpdate = createAsyncThunk('/post/fetchUpdate', async (updatedPost) => {
+    try {
+        const {data} = axios.put(`/posts/${updatedPost.id}`, updatedPost)
+        return data
+    } catch (error) {
+        console.log(error)
+    }
+})
+
 export const PostSlice = createSlice({
     name: 'post',
     initialState: {
@@ -56,6 +74,33 @@ export const PostSlice = createSlice({
             state.status = action.payload.message
         },
         [fetchPosts.rejected]: (state) => {
+            state.loading = false
+        },
+
+        //Delete Post
+        [fetchDeletePost.pending]: (state) => {
+            state.loading = true
+        },
+        [fetchDeletePost.fulfilled]: (state, action) => {
+            state.loading = false
+            state.posts = state.posts.filter((post) => post._id !== action.payload._id)
+        },
+        [fetchDeletePost.rejected]: (state) => {
+            state.loading = false
+        },
+
+
+        //Update Post
+        [fetchUpdate.pending]: (state) => {
+            state.loading = true
+        },
+        [fetchUpdate.fulfilled]: (state, action) => {
+            state.loading = false
+            const idx = state.posts.findIndex((post) => post._id === action.payload._id)
+            state.posts[idx] = action.payload
+            
+        },
+        [fetchUpdate.rejected]: (state) => {
             state.loading = false
         },
     }
