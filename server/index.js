@@ -6,6 +6,7 @@ import upload from 'express-fileupload'
 
 import authRouter from './routes/auth.js'
 import postRouter from './routes/posts.js'
+import commentRouter from './routes/comments.js'
 
 const app = express();
 dotenv.config();
@@ -25,6 +26,7 @@ app.use(cors());
 //Routes
 app.use('/api/auth', authRouter)
 app.use('/api/posts', postRouter)
+app.use('/api/comments', commentRouter)
 
 
 

@@ -22,7 +22,8 @@ const PostItem = ({ post }) => {
       </div>
 
       <Link to={`/post/${post._id}`} className="text-white text-xl">{post.title}</Link>
-      <p className="text-white opacity-60 text-xs pt-4">{post.text}</p>
+      <p className="line-clamp-3 text-white opacity-60 text-xs pt-4">{post.text}</p>
+  
 
       <div className="flex gap-3 mt-2 items-center">
         <button className="flex items-center justify-center gap-2 text-xs text-white opacity-50">

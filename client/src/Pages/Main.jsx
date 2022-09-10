@@ -26,7 +26,7 @@ const Main = () => {
         <div className="basis-1/5">
           <div className="flex-xs uppercase text-white">
             {popularPosts?.map((post, idx) => (
-              <PopularItem key={idx}/>
+              <PopularItem key={idx} post={post}/>
             ))}
           </div>
 

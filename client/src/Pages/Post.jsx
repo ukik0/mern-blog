@@ -9,13 +9,19 @@ import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchDeletePost } from '../redux/slices/post';
 import { toast } from 'react-toastify';
+import { fetchComments, fetchPostComments } from '../redux/slices/comments';
+import CommentItem from '../Components/CommentItem';
 
 const Post = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
-  const [post, setPost] = useState();
   const { id } = useParams();
+
+  const [comments, setComment] = useState('');
+  const [post, setPost] = useState();
+  const cms = useSelector((state) => state.comments.comments)
+  
 
   const fetchPost = useCallback(async () => {
     try {
@@ -26,15 +32,38 @@ const Post = () => {
     }
   }, [id]);
 
+  const handleSubmit = () => {
+    try {
+      const postId = id;
+      dispatch(fetchComments({ postId, comments }));
+      setComment('');
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const deletePostHandler = () => {
     dispatch(fetchDeletePost(id));
     toast('Удаление прошло успешно');
     navigate('/');
   };
 
+  const fetchAllComments = async () => {
+    const postId = id;
+    try {
+      dispatch(fetchPostComments({ postId }));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     fetchPost();
-  }, [fetchPost]);
+  }, []);
+
+  useEffect(() => {
+    fetchAllComments()
+  }, []);
 
   if (!post) {
     return <div className="text-xl text-center text-white py-10">Постов нет</div>;
@@ -102,7 +131,27 @@ const Post = () => {
             </div>
           </div>
         </div>
-        <div className="w-1/3">Comments</div>
+        <div className="w-1/3 p-8 bg-gray-700 flex flex-col gap-2 rounded-sm">
+          <form onSubmit={(e) => e.preventDefault()} className="flex gap-2">
+            <input
+              value={comments}
+              onChange={(e) => setComment(e.target.value)}
+              type="text"
+              placeholder="comment"
+              className="text-black w-full rounded-sm bg-gray-400 border p-2 text-xs outline-none placeholder:text-gray-700"
+            />
+            <button
+              onClick={handleSubmit}
+              type="submit"
+              className="flex justify-center items-center bg-gray-600 text-xs text-white rounded-sm py-2 px-4">
+              Отправить
+            </button>
+          </form>
+
+          {cms?.map((comment) => (
+            <CommentItem key={comment.createdAt} comment={comment}/>
+          ))}
+        </div>
       </div>
     </div>
   );
